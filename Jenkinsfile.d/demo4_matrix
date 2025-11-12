@@ -1,0 +1,23 @@
+pipeline {
+  agent none
+  stages {
+    stage('Test Matrix') {
+      matrix {
+        axes {
+          axis { name 'PYVER'; values '3.10', '3.11' }
+        }
+        agent { docker { image "python:${PYVER}" } }
+        stages {
+          stage('Install & Test') {
+            steps {
+              sh 'python -V'
+              sh 'pip install -U pip pytest'
+              sh 'pytest -q --junitxml=reports/junit.xml'
+            }
+          }
+        }
+        post { always { junit 'reports/junit.xml' } }
+      }
+    }
+  }
+}

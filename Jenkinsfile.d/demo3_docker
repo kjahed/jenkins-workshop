@@ -1,0 +1,12 @@
+pipeline {
+  agent {
+    docker { image 'python:3.11' args '-u root' }
+  }
+  stages {
+    stage('Deps') { steps { sh 'python -V && pip install -U pip pytest' } }
+    stage('Test') { steps { sh 'pytest -q --junitxml=reports/junit.xml' } }
+  }
+  post {
+    always { junit 'reports/junit.xml' }
+  }
+}

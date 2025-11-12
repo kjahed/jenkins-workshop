@@ -1,0 +1,22 @@
+pipeline {
+  agent { label 'python || docker' }
+  stages {
+    stage('Checkout') { steps { checkout scm } }
+    stage('Setup') {
+      steps {
+        sh 'python -m venv .venv && . .venv/bin/activate && pip install -U pip && pip install -r requirements.txt'
+      }
+    }
+    stage('Test') {
+      steps {
+        sh '. .venv/bin/activate && pytest -q --junitxml=reports/junit.xml'
+      }
+      post {
+        always {
+          junit 'reports/junit.xml'
+          archiveArtifacts artifacts: 'reports/**', fingerprint: true
+        }
+      }
+    }
+  }
+}
