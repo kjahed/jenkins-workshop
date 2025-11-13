@@ -1,6 +1,6 @@
 pipeline {
   agent {
-    docker { image 'python:3.11' args '-u root' }
+    dockerContainer { image 'python:3.11' }
   }
   stages {
     stage('Deps') { steps { sh 'python -V && pip install -U pip pytest' } }
